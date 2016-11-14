@@ -1,6 +1,4 @@
-// Copyright © 2016 Great Ideas Club. All rights reserved.
-
-package timerange
+package timewarp
 
 import "time"
 

@@ -1,4 +1,4 @@
-package timerange
+package timewarp
 
 import (
 	"fmt"

@@ -1,4 +1,4 @@
-package timerange_test
+package timewarp_test
 
 import (
 	. "github.com/onsi/ginkgo"

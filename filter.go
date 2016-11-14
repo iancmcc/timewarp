@@ -1,4 +1,4 @@
-package timerange
+package timewarp
 
 // Query is a function that finds the first matching slot in a time range.
 type Query func(input TimeRange) (output TimeRange, ok bool)

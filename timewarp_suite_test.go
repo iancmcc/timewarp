@@ -7,7 +7,7 @@ import (
 	"testing"
 )
 
-func TestTimerange(t *testing.T) {
+func TestTimewarp(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "Timerange Suite")
+	RunSpecs(t, "Timewarp Suite")
 }

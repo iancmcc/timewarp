@@ -55,7 +55,7 @@ var _ = Describe("Parser", func() {
 
 	Context("June 5th 2007", func() {
 		BeforeEach(func() {
-			in = `DAY 5 1 OF MONTH JUNE IN YEAR 2007`
+			in = `DAY 5 OF MONTH JUNE IN YEAR 2007`
 			out = Days(5, 1).Filter().Of(1, TheMonth(time.June)).In(Year(2007))
 		})
 		AssertFilter()
@@ -63,7 +63,7 @@ var _ = Describe("Parser", func() {
 
 	Context("Leap days", func() {
 		BeforeEach(func() {
-			in = `DAY 29 1 OF MONTH FEBRUARY`
+			in = `DAY 29 OF MONTH FEBRUARY`
 			out = Days(29, 1).Filter().Of(1, TheMonth(time.February))
 		})
 		AssertFilter()

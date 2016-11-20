@@ -22,11 +22,16 @@ func (q Query) Filter() Filter {
 	}
 }
 
+// Not returns the query into an inverse filter.
+func (q Query) Not() Filter {
+	return q.Filter().Negate()
+}
+
 // Filter is a function that returns all matching slots in a time range.
 type Filter func(input TimeRange) []TimeRange
 
-// Not returns a filter that returns the inverse results
-func (f Filter) Not() Filter {
+// Negate returns a filter that returns the inverse results
+func (f Filter) Negate() Filter {
 	return func(input TimeRange) []TimeRange {
 		var result []TimeRange
 

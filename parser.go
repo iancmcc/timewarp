@@ -62,7 +62,7 @@ func (p *Parser) ParseFilter() (f Filter, err error) {
 		if err != nil {
 			return nil, err
 		}
-		f = f.Not()
+		f = f.Negate()
 		return
 	case YEAR:
 		return p.parseYearFilter()

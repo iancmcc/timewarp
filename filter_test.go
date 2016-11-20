@@ -3,7 +3,7 @@ package timewarp_test
 import (
 	"time"
 
-	. "github.com/iancmcc/fasterstronger/timerange"
+	. "github.com/FasterStronger/timewarp"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -41,10 +41,10 @@ var _ = Describe("Filter", func() {
 
 	})
 
-	Context("Not", func() {
+	Context("Negate", func() {
 
 		BeforeEach(func() {
-			f = Month(time.June).Filter().Not()
+			f = Month(time.June).Not()
 			in, _ = Parse(datefmt, "06-12-13", "06-20-15")
 
 			slot1, _ := Parse(datefmt, "07-01-13", "06-01-14")

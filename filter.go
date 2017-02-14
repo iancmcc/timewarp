@@ -59,7 +59,6 @@ func (f Filter) Union(filters ...Filter) Filter {
 			result = append(result, f(input)...)
 		}
 
-		Merge(&result)
 		return result
 	}
 }

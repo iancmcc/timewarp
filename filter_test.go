@@ -68,12 +68,13 @@ var _ = Describe("Filter", func() {
 			in, _ = Parse(datefmt, "11-04-13", "08-01-14")
 
 			slot1, _ := Parse(datefmt, "11-04-13", "12-01-13")
-			slot2, _ := Parse(datefmt, "06-01-14", "08-01-14")
-			result = []TimeRange{slot1, slot2}
+			slot2, _ := Parse(datefmt, "06-01-14", "07-01-14")
+			slot3, _ := Parse(datefmt, "07-01-14", "08-01-14")
+			result = []TimeRange{slot1, slot2, slot3}
 		})
 
 		It("should return the union of the results", func() {
-			Expect(out).To(Equal(result))
+			Expect(out).To(ConsistOf(result))
 		})
 	})
 

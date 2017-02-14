@@ -1,6 +1,7 @@
 package timewarp
 
 import (
+	"bytes"
 	"fmt"
 	"io"
 	"strconv"
@@ -21,6 +22,11 @@ type Parser struct {
 		pos Pos
 		lit string
 	}
+}
+
+// ParseString returns a filter for the provided parser
+func ParseString(s string) (Filter, error) {
+	return NewParser(bytes.NewBufferString(s)).Parse()
 }
 
 // NewParser instantiates a parser

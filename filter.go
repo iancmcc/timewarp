@@ -1,49 +1,63 @@
 package timewarp
 
 // Query is a function that finds the first matching slot in a time range.
-type Query func(input TimeRange) (output TimeRange, ok bool)
+type Query func(input TimeRange) (output *TimeRange)
 
 // Filter changes the query into a filter.
 func (q Query) Filter() Filter {
-	return func(input TimeRange) []TimeRange {
-		var result []TimeRange
+	return func(input TimeRange) []*TimeRange {
+		var result []*TimeRange
 
 		for input.Duration() > 0 {
-			var output, ok = q(input)
-			if !ok {
+			if output := q(input); output != nil {
+				result = append(result, output)
+				input.Start = output.End
+			} else {
 				break
 			}
-
-			result = append(result, output)
-			input.Start = output.End
 		}
 
 		return result
 	}
 }
 
-// Not returns the query into an inverse filter.
+// Not turns the query into an inverse filter.
 func (q Query) Not() Filter {
 	return q.Filter().Negate()
 }
 
+// And combines queries to produce a union filter.
+func (q Query) And(r ...Query) Filter {
+	return q.Filter().And(r...)
+}
+
+// In combines queries to produce an intersection filter.
+func (q Query) In(r ...Query) Filter {
+	return q.Filter().In(r...)
+}
+
+// Of is the query implementation of Ordinal
+func (q Query) Of(i int, r Query) Filter {
+	return q.Filter().Of(i, r)
+}
+
 // Filter is a function that returns all matching slots in a time range.
-type Filter func(input TimeRange) []TimeRange
+type Filter func(input TimeRange) []*TimeRange
 
 // Negate returns a filter that returns the inverse results
 func (f Filter) Negate() Filter {
-	return func(input TimeRange) []TimeRange {
-		var result []TimeRange
+	return func(input TimeRange) []*TimeRange {
+		var result []*TimeRange
 
 		for _, s := range f(input) {
 			if input.Start.Before(s.Start) {
-				result = append(result, TimeRange{input.Start, s.Start})
+				result = append(result, &TimeRange{input.Start, s.Start})
 			}
 			input.Start = s.End
 		}
 
 		if input.Start.Before(input.End) {
-			result = append(result, input)
+			result = append(result, &input)
 		}
 
 		return result
@@ -52,7 +66,7 @@ func (f Filter) Negate() Filter {
 
 // Union returns a filter that's result comprises of multiple filters
 func (f Filter) Union(filters ...Filter) Filter {
-	return func(input TimeRange) []TimeRange {
+	return func(input TimeRange) []*TimeRange {
 		var result = f(input)
 
 		for _, f := range filters {
@@ -74,14 +88,14 @@ func (f Filter) And(queries ...Query) Filter {
 
 // Intersect returns a filter that's result must satisfy all filters
 func (f Filter) Intersect(filters ...Filter) Filter {
-	return func(input TimeRange) []TimeRange {
+	return func(input TimeRange) []*TimeRange {
 		var result = f(input)
 
 		for _, f := range filters {
-			var output []TimeRange
+			var output []*TimeRange
 
 			for _, s := range result {
-				output = append(output, f(s)...)
+				output = append(output, f(*s)...)
 			}
 
 			result = output
@@ -106,12 +120,12 @@ func (f Filter) Ordinal(order int, filter Filter) Filter {
 		panic("ordinal cannot be zero")
 	}
 
-	return func(input TimeRange) (result []TimeRange) {
+	return func(input TimeRange) (result []*TimeRange) {
 		for _, v := range filter(input) {
-			var r = f(v)
+			var r = f(*v)
 
 			// find the range that satisfies the ordinal
-			var output TimeRange
+			var output = &TimeRange{}
 			if size := len(r); order < 0 {
 				if -order > size {
 					continue

@@ -16,7 +16,7 @@ var _ = Describe("TimeRange", func() {
 			format string
 			start  string
 			end    string
-			slot   TimeRange
+			slot   *TimeRange
 			err    error
 		)
 
@@ -31,7 +31,7 @@ var _ = Describe("TimeRange", func() {
 
 			It("should have an error", func() {
 				Expect(err).To(HaveOccurred())
-				Expect(slot.Duration()).To(Equal(time.Duration(0)))
+				Expect(slot).To(BeNil())
 			})
 		})
 
@@ -49,12 +49,12 @@ var _ = Describe("TimeRange", func() {
 
 	Describe("Sorting and Searching", func() {
 		var (
-			slots []TimeRange
-			slot1 TimeRange
-			slot2 TimeRange
-			slot3 TimeRange
-			slot4 TimeRange
-			slot5 TimeRange
+			slots []*TimeRange
+			slot1 *TimeRange
+			slot2 *TimeRange
+			slot3 *TimeRange
+			slot4 *TimeRange
+			slot5 *TimeRange
 		)
 
 		BeforeEach(func() {
@@ -63,7 +63,7 @@ var _ = Describe("TimeRange", func() {
 			slot3, _ = Parse(time.Kitchen, "12:00AM", "3:00AM")
 			slot4, _ = Parse(time.Kitchen, "4:00AM", "7:00AM")
 			slot5, _ = Parse(time.Kitchen, "8:00AM", "2:00PM")
-			slots = []TimeRange{slot1, slot2, slot3, slot4, slot5}
+			slots = []*TimeRange{slot1, slot2, slot3, slot4, slot5}
 		})
 
 		Context("sorted", func() {
@@ -72,15 +72,15 @@ var _ = Describe("TimeRange", func() {
 			})
 
 			It("should be sorted", func() {
-				Expect(slots).To(Equal([]TimeRange{slot3, slot1, slot2, slot4, slot5}))
+				Expect(slots).To(Equal([]*TimeRange{slot3, slot1, slot2, slot4, slot5}))
 			})
 		})
 
 		Context("not found", func() {
 			var (
-				search1 TimeRange
-				search2 TimeRange
-				search3 TimeRange
+				search1 *TimeRange
+				search2 *TimeRange
+				search3 *TimeRange
 			)
 
 			BeforeEach(func() {
@@ -98,8 +98,8 @@ var _ = Describe("TimeRange", func() {
 
 		Context("found", func() {
 			var (
-				search1 TimeRange
-				search2 TimeRange
+				search1 *TimeRange
+				search2 *TimeRange
 			)
 
 			BeforeEach(func() {
@@ -117,7 +117,7 @@ var _ = Describe("TimeRange", func() {
 	})
 
 	Describe("Merging", func() {
-		var slots []TimeRange
+		var slots []*TimeRange
 
 		BeforeEach(func() {
 			slot1, _ := Parse(time.Kitchen, "2:00PM", "4:00PM")
@@ -125,7 +125,7 @@ var _ = Describe("TimeRange", func() {
 			slot3, _ := Parse(time.Kitchen, "6:00PM", "9:00PM")
 			slot4, _ := Parse(time.Kitchen, "9:00PM", "10:00PM")
 			slot5, _ := Parse(time.Kitchen, "10:00AM", "3:00PM")
-			slots = []TimeRange{slot1, slot2, slot3, slot4, slot5}
+			slots = []*TimeRange{slot1, slot2, slot3, slot4, slot5}
 		})
 
 		JustBeforeEach(func() {
@@ -136,7 +136,7 @@ var _ = Describe("TimeRange", func() {
 			slot1, _ := Parse(time.Kitchen, "10:00AM", "5:00PM")
 			slot2, _ := Parse(time.Kitchen, "6:00PM", "10:00PM")
 
-			Expect(slots).To(Equal([]TimeRange{slot1, slot2}))
+			Expect(slots).To(Equal([]*TimeRange{slot1, slot2}))
 		})
 	})
 })

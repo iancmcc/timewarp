@@ -14,13 +14,13 @@ var _ = Describe("Filter", func() {
 
 	var (
 		f      Filter
-		in     TimeRange
-		out    []TimeRange
-		result []TimeRange
+		in     *TimeRange
+		out    []*TimeRange
+		result []interface{}
 	)
 
 	JustBeforeEach(func() {
-		out = f(in)
+		out = f(*in)
 	})
 
 	Context("Filter from Query", func() {
@@ -32,11 +32,11 @@ var _ = Describe("Filter", func() {
 			slot1, _ := Parse(datefmt, "06-12-13", "07-01-13")
 			slot2, _ := Parse(datefmt, "06-01-14", "07-01-14")
 			slot3, _ := Parse(datefmt, "06-01-15", "06-20-15")
-			result = []TimeRange{slot1, slot2, slot3}
+			result = []interface{}{slot1, slot2, slot3}
 		})
 
 		It("should return the filtered results", func() {
-			Expect(out).To(Equal(result))
+			Expect(out).To(ConsistOf(result...))
 		})
 
 	})
@@ -49,11 +49,11 @@ var _ = Describe("Filter", func() {
 
 			slot1, _ := Parse(datefmt, "07-01-13", "06-01-14")
 			slot2, _ := Parse(datefmt, "07-01-14", "06-01-15")
-			result = []TimeRange{slot1, slot2}
+			result = []interface{}{slot1, slot2}
 		})
 
 		It("should return the inverse filtered results", func() {
-			Expect(out).To(Equal(result))
+			Expect(out).To(ConsistOf(result...))
 		})
 	})
 
@@ -70,11 +70,11 @@ var _ = Describe("Filter", func() {
 			slot1, _ := Parse(datefmt, "11-04-13", "12-01-13")
 			slot2, _ := Parse(datefmt, "06-01-14", "07-01-14")
 			slot3, _ := Parse(datefmt, "07-01-14", "08-01-14")
-			result = []TimeRange{slot1, slot2, slot3}
+			result = []interface{}{slot1, slot2, slot3}
 		})
 
 		It("should return the union of the results", func() {
-			Expect(out).To(ConsistOf(result))
+			Expect(out).To(ConsistOf(result...))
 		})
 	})
 
@@ -88,29 +88,26 @@ var _ = Describe("Filter", func() {
 			in, _ = Parse(datefmt, "03-13-13", "04-10-15")
 
 			slot1, _ := Parse(datefmt, "06-01-13", "07-01-13")
-			result = []TimeRange{slot1}
+			result = []interface{}{slot1}
 		})
 
 		It("should return an intersection of the results", func() {
-			Expect(out).To(Equal(result))
+			Expect(out).To(ConsistOf(result...))
 		})
 	})
 
 	Context("Ordinal", func() {
 
 		BeforeEach(func() {
-			mf := TheMonth(time.November).Filter()
-			df := Week(time.Thursday, 1).Filter()
-			f = df.Ordinal(4, mf)
-
+			f = Week(time.Thursday, 1).Of(4, TheMonth(time.November))
 			in, _ = Parse(datefmt, "11-11-16", "11-30-16")
 
 			slot1, _ := Parse(datefmt, "11-24-16", "11-25-16")
-			result = []TimeRange{slot1}
+			result = []interface{}{slot1}
 		})
 
 		It("should return the 4th Thursday of November", func() {
-			Expect(out).To(Equal(result))
+			Expect(out).To(ConsistOf(result...))
 		})
 	})
 })

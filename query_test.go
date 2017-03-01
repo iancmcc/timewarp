@@ -14,34 +14,31 @@ var _ = Describe("Query", func() {
 
 	var (
 		q      Query
-		in     TimeRange
-		out    TimeRange
-		result TimeRange
-		ok     bool
+		in     *TimeRange
+		out    *TimeRange
+		result *TimeRange
 	)
 
 	AssertNotInRange := func() {
 		It("should not be in range", func() {
-			Expect(ok).To(BeFalse())
+			Expect(out).To(BeNil())
 		})
 	}
 
 	AssertInRangeEquals := func() {
 		It("should equal the input", func() {
-			Expect(ok).To(BeTrue())
 			Expect(out).To(Equal(in))
 		})
 	}
 
 	AssertInRange := func() {
 		It("should be in range", func() {
-			Expect(ok).To(BeTrue())
 			Expect(out).To(Equal(result))
 		})
 	}
 
 	JustBeforeEach(func() {
-		out, ok = q(in)
+		out = q(*in)
 	})
 
 	Describe("Year", func() {

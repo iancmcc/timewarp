@@ -274,7 +274,7 @@ func (p *Parser) parseDayFilter(v int) (f Filter, err error) {
 
 		tok, pos, lit = p.scanIgnoreWhitespace()
 		if tok.isDayOfWeek() {
-			delta = getWeekdayDelta(getDayOfWeek(tok), day)
+			delta = getWeekdayDelta(day, getDayOfWeek(tok)) + 1
 		} else {
 			p.unscan()
 		}

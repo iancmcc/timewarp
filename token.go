@@ -142,11 +142,6 @@ func (tok Token) String() string {
 	return ""
 }
 
-// isOperator returns true for operator tokens
-func (tok Token) isOperator() bool {
-	return tok == LPAREN || tok == RPAREN || tok > operatorBeg && tok < operatorEnd
-}
-
 // isMonthOfYear returns true for month of year tokens
 func (tok Token) isMonthOfYear() bool {
 	return tok > moyBeg && tok < moyEnd

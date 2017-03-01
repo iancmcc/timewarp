@@ -17,7 +17,7 @@ var _ = Describe("Parser", func() {
 	)
 
 	var (
-		r      TimeRange
+		r      *TimeRange
 		in     string
 		out    Filter
 		result Filter
@@ -25,7 +25,8 @@ var _ = Describe("Parser", func() {
 	)
 
 	BeforeEach(func() {
-		r, _ = Parse(datefmt, "01-01-2006", "01-01-2017")
+		r, err = Parse(datefmt, "01-01-06", "01-01-07")
+		Expect(err).ShouldNot(HaveOccurred())
 	})
 
 	JustBeforeEach(func() {
@@ -35,7 +36,7 @@ var _ = Describe("Parser", func() {
 	AssertFilter := func() {
 		Specify("a matching filter", func() {
 			Expect(err).To(BeNil())
-			Expect(result(r)).To(Equal(out(r)))
+			Expect(result(*r)).To(Equal(out(*r)))
 		})
 	}
 
@@ -56,7 +57,7 @@ var _ = Describe("Parser", func() {
 	Context("June 5th 2007", func() {
 		BeforeEach(func() {
 			in = `DAY 5 OF MONTH JUNE IN YEAR 2007`
-			out = Days(5, 1).Filter().Of(1, TheMonth(time.June)).In(Year(2007))
+			out = Days(5, 1).Of(1, TheMonth(time.June)).In(Year(2007))
 		})
 		AssertFilter()
 	})
@@ -64,7 +65,7 @@ var _ = Describe("Parser", func() {
 	Context("Leap days", func() {
 		BeforeEach(func() {
 			in = `DAY 29 OF MONTH FEBRUARY`
-			out = Days(29, 1).Filter().Of(1, TheMonth(time.February))
+			out = Days(29, 1).Of(1, TheMonth(time.February))
 		})
 		AssertFilter()
 	})
@@ -72,7 +73,7 @@ var _ = Describe("Parser", func() {
 	Context("The second Tuesday of the month", func() {
 		BeforeEach(func() {
 			in = `DAY TUESDAY OF 2 MONTH`
-			out = Week(time.Tuesday, 1).Filter().Of(2, TheMonth(0))
+			out = Week(time.Tuesday, 1).Of(2, TheMonth(0))
 		})
 		AssertFilter()
 	})
@@ -80,7 +81,7 @@ var _ = Describe("Parser", func() {
 	Context("Mondays-Wednesdays, and Fridays from 4-6p", func() {
 		BeforeEach(func() {
 			in = `DAY MONDAY WEDNESDAY AND DAY FRIDAY IN TIME 1600 1800`
-			out = Week(time.Monday, 3).Filter().And(Week(time.Friday, 1)).In(Times(timefmt, "1600", "1800"))
+			out = Week(time.Monday, 3).And(Week(time.Friday, 1)).In(Times(timefmt, "1600", "1800"))
 		})
 		AssertFilter()
 	})
@@ -88,8 +89,8 @@ var _ = Describe("Parser", func() {
 	Context("Sundays from 8-10a, Tuesdays from 4-9p", func() {
 		BeforeEach(func() {
 			in = `(DAY SUNDAY IN TIME 0800 1000) AND (DAY TUESDAY IN TIME 1600 2100)`
-			f1 := Week(time.Sunday, 1).Filter().In(Times(timefmt, "0800", "1000"))
-			f2 := Week(time.Tuesday, 1).Filter().In(Times(timefmt, "1600", "2100"))
+			f1 := Week(time.Sunday, 1).In(Times(timefmt, "0800", "1000"))
+			f2 := Week(time.Tuesday, 1).In(Times(timefmt, "1600", "2100"))
 			out = f1.Union(f2)
 		})
 		AssertFilter()
@@ -140,7 +141,7 @@ var _ = Describe("Parser", func() {
 	Context("Every three days", func() {
 		BeforeEach(func() {
 			in = `DAY OF 3 DAY`
-			out = Days(0, 1).Filter().Of(3, TheDays(-2, 5))
+			out = Days(0, 1).Of(3, TheDays(-2, 5))
 		})
 		AssertFilter()
 	})
@@ -154,8 +155,8 @@ var _ = Describe("Parser", func() {
 
 	Context("Three days on, 2 days off", func() {
 		BeforeEach(func() {
-			in = `DAY 3 OF DAY 5`
-			out = Days(0, 3).Filter().Of(1, TheDays(0, 5))
+			in = `DAY 0 3 OF DAY 0 5`
+			out = Days(0, 3).Of(1, TheDays(0, 5))
 		})
 		AssertFilter()
 	})
@@ -163,7 +164,7 @@ var _ = Describe("Parser", func() {
 	Context("First Monday from three days from now", func() {
 		BeforeEach(func() {
 			in = `DAY MONDAY OF DAY 3 7`
-			out = Week(time.Monday, 1).Filter().Of(1, TheDays(3, 7))
+			out = Week(time.Monday, 1).Of(1, TheDays(3, 7))
 		})
 		AssertFilter()
 	})
@@ -179,7 +180,7 @@ var _ = Describe("Parser", func() {
 	Context("Tuesday, Wednesday, every 3 weeks", func() {
 		BeforeEach(func() {
 			in = `DAY TUESDAY WEDNESDAY OF 3 WEEK MONDAY`
-			out = Week(time.Tuesday, 2).Filter().Of(3, TheWeek(time.Monday, 7, -2, 5))
+			out = Week(time.Tuesday, 2).Of(3, TheWeek(time.Monday, 7, -2, 5))
 		})
 		AssertFilter()
 	})
@@ -187,7 +188,7 @@ var _ = Describe("Parser", func() {
 	Context("Tuesday, Wednesday every 3 weeks", func() {
 		BeforeEach(func() {
 			in = `DAY TUESDAY WEDNESDAY OF 3 WEEK`
-			out = Week(time.Tuesday, 2).Filter().Of(3, TheWeek(-1, 7, -2, 5))
+			out = Week(time.Tuesday, 2).Of(3, TheWeek(-1, 7, -2, 5))
 		})
 		AssertFilter()
 	})
@@ -195,7 +196,7 @@ var _ = Describe("Parser", func() {
 	Context("Fourth Thursday of the month", func() {
 		BeforeEach(func() {
 			in = `DAY THURSDAY OF 4 MONTH`
-			out = Week(time.Thursday, 1).Filter().Of(4, Month(0))
+			out = Week(time.Thursday, 1).Of(4, Month(0))
 		})
 		AssertFilter()
 	})
@@ -267,7 +268,7 @@ var _ = Describe("Parser", func() {
 	Context("Except the first Tuesday of March", func() {
 		BeforeEach(func() {
 			in = `NOT (DAY TUESDAY OF MONTH MARCH)`
-			out = Week(time.Tuesday, 1).Filter().Of(1, TheMonth(time.March))
+			out = (Week(time.Tuesday, 1).Of(1, TheMonth(time.March))).Negate()
 		})
 		AssertFilter()
 	})

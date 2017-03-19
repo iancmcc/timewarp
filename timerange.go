@@ -87,7 +87,13 @@ func Merge(trs *[]*TimeRange) {
 // SearchIndex returns the index of the first time range that satisfies the
 // boundaries of a provided time range.  Returns -1 if not found.
 func SearchIndex(trs []*TimeRange, v *TimeRange) int {
+	isSorted := sort.IsSorted(timeRangeSlice(trs))
+
 	for i, tr := range trs {
+		if isSorted && !v.End.After(tr.Start) {
+			return -1
+		}
+
 		if !v.Start.Before(tr.Start) && !v.End.After(tr.End) {
 			return i
 		}

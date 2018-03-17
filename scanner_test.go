@@ -3,7 +3,7 @@ package timewarp_test
 import (
 	"bytes"
 
-	. "github.com/FasterStronger/timewarp"
+	. "github.com/takeinitiative/timewarp"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/ginkgo/extensions/table"

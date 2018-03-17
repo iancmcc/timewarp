@@ -1,5 +1,7 @@
 package timewarp
 
+import "time"
+
 // Query is a function that finds the first matching slot in a time range.
 type Query func(input TimeRange) (output *TimeRange)
 
@@ -159,4 +161,14 @@ func (f Filter) Ordinal(order int, filter Filter) Filter {
 // Of is the same as Ordinal, but passes a query instead of a filter
 func (f Filter) Of(order int, q Query) Filter {
 	return f.Ordinal(order, q.Filter())
+}
+
+// Apply calls the filter function
+func (f Filter) Apply(start, end time.Time) []*TimeRange {
+	return f(TimeRange{start, end})
+}
+
+// ApplySeconds calls the filter function for seconds
+func (f Filter) ApplySeconds(start, end int64) []*TimeRange {
+	return f.Apply(time.Unix(start, 0), time.Unix(end, 0))
 }

@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"time"
 
-	. "github.com/FasterStronger/timewarp"
+	. "github.com/takeinitiative/timewarp"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"

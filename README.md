@@ -6,7 +6,7 @@ TimeWarp makes describing  recurring time ranges easy!  It has **no external dep
 ```go
 import (
     "bytes"
-    "github.com/FasterStronger/timewarp"
+    "github.com/takeinitiative/timewarp"
 )
 
 func main() {

@@ -35,6 +35,7 @@ const (
 	WEEK  // WEEK
 	DAY   // DAY
 	TIME  // TIME
+	RANGE // RANGE
 	keywordEnd
 
 	moyBeg
@@ -87,6 +88,7 @@ var tokens = [...]string{
 	WEEK:  "WEEK",
 	DAY:   "DAY",
 	TIME:  "TIME",
+	RANGE: "RANGE",
 
 	JANUARY:   "JANUARY",
 	FEBRUARY:  "FEBRUARY",

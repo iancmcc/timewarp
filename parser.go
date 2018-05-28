@@ -156,9 +156,16 @@ func (p *Parser) parseOrdinal(v int) (f Filter, err error) {
 		return p.parseWeekFilter(v)
 	case DAY:
 		return p.parseDayFilter(v)
+	case RANGE:
+		return p.parseRangeFilter()
 	default:
-		return nil, newParseError(tokstr(tok, lit), []string{"MONTH", "WEEK", "DAY"}, pos)
+		return nil, newParseError(tokstr(tok, lit), []string{"MONTH", "WEEK", "DAY", "RANGE"}, pos)
 	}
+}
+
+// parseRangeFilter is a no-op for ordinal calculations
+func (p *Parser) parseRangeFilter() (f Filter, err error) {
+	return Range().Filter(), nil
 }
 
 // parseYearFilter returns a filter for a given year

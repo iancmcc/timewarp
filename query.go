@@ -57,6 +57,13 @@ func Month(month time.Month) Query {
 	}
 }
 
+// Range is a no-op
+func Range() Query {
+	return func(input TimeRange) *TimeRange {
+		return &input
+	}
+}
+
 // TheMonth returns the full month that matches the range.  If zero, it
 // returns the current month.
 func TheMonth(month time.Month) Query {

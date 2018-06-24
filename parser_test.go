@@ -25,7 +25,7 @@ var _ = Describe("Parser", func() {
 	)
 
 	BeforeEach(func() {
-		r, err = Parse(datefmt, "01-01-06", "01-01-07")
+		r, err = Parse(datefmt, "01-01-18", "01-01-19")
 		Expect(err).ShouldNot(HaveOccurred())
 	})
 
@@ -54,10 +54,64 @@ var _ = Describe("Parser", func() {
 		AssertError()
 	})
 
-	Context("June 5th 2007", func() {
+	Context("First Monday, Wednesday and Friday of July", func() {
 		BeforeEach(func() {
-			in = `DAY 5 OF MONTH JUNE IN YEAR 2007`
-			out = Days(5, 1).Of(1, TheMonth(time.June)).In(Year(2007))
+			in = `(day monday friday of month july) in not (day tuesday and day thursday)`
+			d1 := Week(time.Tuesday, 1).And(Week(time.Thursday, 1)).Negate()
+			out = Week(time.Monday, 5).Of(1, TheMonth(time.July)).Intersect(d1)
+		})
+		AssertFilter()
+	})
+
+	Context("July 2, 4, 6", func() {
+		BeforeEach(func() {
+			in = `(DAY 2 OF MONTH JULY) and (DAY 4 OF MONTH JULY) and (DAY 6 oF MONTH JULY)`
+
+			d1 := Days(1, 1).Of(1, TheMonth(time.July))
+			d2 := Days(3, 1).Of(1, TheMonth(time.July))
+			d3 := Days(5, 1).Of(1, TheMonth(time.July))
+
+			out = d1.Union(d2, d3)
+		})
+		AssertFilter()
+	})
+
+	Context("July 7 830a-1130p", func() {
+		BeforeEach(func() {
+			in = `day 7 of month july in time 0830 1130`
+			out = Days(6, 1).Of(1, TheMonth(time.July)).In(Times(timefmt, "0830", "1130"))
+		})
+		AssertFilter()
+	})
+
+	Context("Mondays and Saturdays, Tuesdays and Thursdays after 1p, Wednesdays and Fridays before 2p, but not the first week in july", func() {
+		BeforeEach(func() {
+			in = `(day monday and day saturday) and ((day tuesday and day thursday) in time 1300 0000) and ((day wednesday and day friday) in time 0000 1400) in not (week monday of month july)`
+
+			d1 := Week(time.Monday, 1).And(Week(time.Saturday, 1))
+			d2 := Week(time.Tuesday, 1).And(Week(time.Thursday, 1)).In(Times(timefmt, "1300", "0000"))
+			d3 := Week(time.Wednesday, 1).And(Week(time.Friday, 1)).In(Times(timefmt, "0000", "1400"))
+			d4 := Week(time.Monday, 7).Of(1, TheMonth(time.July)).Negate()
+			out = d1.Union(d2, d3).Intersect(d4)
+		})
+		AssertFilter()
+	})
+
+	Context("Sundays through Tuesdays, Wednesday through Saturdays except Thursdays before 4p, excluding July 10-17", func() {
+		BeforeEach(func() {
+			in = `day sunday tuesday and ((day wednesday saturday in not day thursday) in time 0000 1600) in not (day 10 17 of month july)`
+			d1 := Week(time.Sunday, 3).Filter()
+			d2 := Week(time.Wednesday, 4).Filter().Intersect(Week(time.Thursday, 1).Not()).In(Times(timefmt, "0000", "1600"))
+			d3 := Days(9, 8).Of(1, TheMonth(time.July)).Negate()
+			out = d1.Union(d2).Intersect(d3)
+		})
+		AssertFilter()
+	})
+
+	Context("June 5th 2006", func() {
+		BeforeEach(func() {
+			in = `DAY 5 OF MONTH JUNE IN YEAR 2006`
+			out = Days(4, 1).Of(1, TheMonth(time.June)).In(Year(2006))
 		})
 		AssertFilter()
 	})
@@ -155,7 +209,7 @@ var _ = Describe("Parser", func() {
 
 	Context("Three days on, 2 days off", func() {
 		BeforeEach(func() {
-			in = `DAY 0 3 OF DAY 0 5`
+			in = `DAY 1 3 OF DAY 0 5`
 			out = Days(0, 3).Of(1, TheDays(0, 5))
 		})
 		AssertFilter()

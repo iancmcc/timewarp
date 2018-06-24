@@ -256,7 +256,7 @@ func (p *Parser) parseDayFilter(v int) (f Filter, err error) {
 				return TheDays(d, n).Filter(), nil
 			}
 
-			return Days(d, n).Filter(), nil
+			return Days(d-1, n-d+1).Filter(), nil
 		}
 
 		p.unscan()
@@ -264,7 +264,7 @@ func (p *Parser) parseDayFilter(v int) (f Filter, err error) {
 			return TheDays(d, 1).Filter(), nil
 		}
 
-		return Days(d, 1).Filter(), nil
+		return Days(d-1, 1).Filter(), nil
 
 	} else if tok.isDayOfWeek() {
 		if v != 0 {
